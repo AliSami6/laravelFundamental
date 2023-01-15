@@ -39,7 +39,7 @@
                     type: "get",
                     data: {para_text:para},
                     success: function(response) {
-                    // $('h2').text(response.data)
+                      $('h2').text(response.data)
                     //console.log(response);
                     }
                 });
