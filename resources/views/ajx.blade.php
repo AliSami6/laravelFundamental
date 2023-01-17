@@ -1,37 +1,74 @@
 <!doctype html>
 <html lang="en">
-  <head>
+
+<head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="csrf-token" content="{{ csrf_token() }}">
+
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <title>Hello, world!</title>
-  </head>
-  <body>
-    <h1>Hello, world!</h1>
+    <title>Laravel ajax</title>
+</head>
+
+<body>
+
     <div class="container mt-5">
-      <div class="row">
-        <div class="col-6 mx-auto">
-            <div class="card">
-              <div class="card-body">
-                <p id="para">Lorem ipsum dolor sit amet.</p>
-                <button class="btn btn-sm btn-outline-primary click-btn">Click ME</button>
-                <h3></h3>
-              </div>
+        <div class="row">
+            <div class="col-6 mx-auto">
+                <div class="alert-msg">
+
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <form method="POST" id="submit">
+                            @csrf
+                            <div class="mb-3">
+                                <label for="name" class="form-label">name</label>
+                                <input type="text" name="name" class="form-control form-control-sm">
+                            </div>
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" name="email" class="form-control form-control-sm">
+                            </div>
+                            <div class="mb-3">
+                                <label for="phone" class="form-label">Phone</label>
+                                <input type="text" name="phone" class="form-control form-control-sm">
+                            </div>
+
+
+
+                            <button type="button" class="btn btn-sm btn-primary submit-btn">Submit</button>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
-      </div>
     </div>
 
-   <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.3.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
-
-   <script>
-
+    <script>
+        var _token = "{{ csrf_token() }}";
+        $(document).ready(function() {
+            $('button.submit-btn').click(function() {
+                let forms = document.getElementById('submit');
+                let form_data =new FormData(forms);
+                $.ajax({
+                  url:"{{ route('form.store') }}",
+                  type:"POST",
+                 
+                  success: function(response) {
+                    $('form')[0].reset();
+                    $('.alert-msg').append('<span class="alert alert-success d-block">'+response+'</span>')
+                  }
+                })
+            });
+        });
     </script>
 
-  </body>
+</body>
+
 </html>

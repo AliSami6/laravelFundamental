@@ -18,7 +18,7 @@
         <div class="row">
             <div class="col-6 mx-auto">
                 <div class="alert-msg">
-                  
+
                 </div>
 
                 <div class="card">

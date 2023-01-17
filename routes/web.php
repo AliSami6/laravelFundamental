@@ -26,14 +26,16 @@ Route::get('/ajax', function () {
 
     return view('ajax');
 });
-
+Route::get('form', function () {
+    return view('form');
+});
 Route::get('/form-ajax', function () {
-
     return view('form-ajax');
 });
 Route::get('generate-pdf', [App\Http\Controllers\PDFController::class, 'generatePDF']);
 Route::get('/ajax/data',[AjaxController::class,'GetAjaxData'])->name('ajax.request');
 Route::post('from/ajax',[AjaxController::class,'FormAjaxData'])->name('form.ajax');
+Route::post('ajax/insert',[AjaxController::class,'FormAjaxStore'])->name('form.submit');
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
