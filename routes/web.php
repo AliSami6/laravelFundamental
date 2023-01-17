@@ -32,10 +32,14 @@ Route::get('form', function () {
 Route::get('/form-ajax', function () {
     return view('form-ajax');
 });
+Route::get('/table', function () {
+    return view('ajax_crud.index');
+});
 Route::get('generate-pdf', [App\Http\Controllers\PDFController::class, 'generatePDF']);
 Route::get('/ajax/data',[AjaxController::class,'GetAjaxData'])->name('ajax.request');
 Route::post('from/ajax',[AjaxController::class,'FormAjaxData'])->name('form.ajax');
 Route::post('ajax/insert',[AjaxController::class,'FormAjaxStore'])->name('form.submit');
+Route::post('/table',[AjaxController::class,'FormAdd'])->name('form.table');
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
