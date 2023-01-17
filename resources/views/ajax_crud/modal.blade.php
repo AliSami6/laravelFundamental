@@ -21,7 +21,7 @@
                             </div>
                             <div class="mb-3">
                                 <label for="phone" class="form-label">Phone</label>
-                                <input type="number" name="phone" class="form-control form-control-sm">
+                                <input type="text" name="phone" class="form-control form-control-sm">
                             </div>
                             <div class="mb-3">
                                 <label for="roll" class="form-label">Roll</label>

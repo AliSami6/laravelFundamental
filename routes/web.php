@@ -40,6 +40,8 @@ Route::get('/ajax/data',[AjaxController::class,'GetAjaxData'])->name('ajax.reque
 Route::post('from/ajax',[AjaxController::class,'FormAjaxData'])->name('form.ajax');
 Route::post('ajax/insert',[AjaxController::class,'FormAjaxStore'])->name('form.submit');
 Route::post('/table',[AjaxController::class,'FormAdd'])->name('form.table');
+Route::post('/get-table-data',[AjaxController::class,'StudentData'])->name('student.getData');
+Route::post('/student-del',[AjaxController::class,'StudentDelete'])->name('student.delete');
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
