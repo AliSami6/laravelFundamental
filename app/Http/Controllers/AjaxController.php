@@ -41,8 +41,32 @@ class AjaxController extends Controller
         ]);
         return response()->json('Record Stored Successfully!.');
     }
-     public function FormAdd(Request $request)
+    public function FormAdd(Request $request)
     {
+        $profile = $this->file_upload($request->file('image'), 'images/profile/');
+        $data = profile::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'phone' => $request->phone,
+            'roll' => $request->roll,
+            'reg' => $request->reg,
+            'board' => $request->board,
+            'image' => $profile,
+        ]);
+        if($data){
+          $output = ['status'=>'success','message'=>'Data has been saved successfully!.'];
+        }else{
+           $output = ['status'=>'error','message'=>'Something went wrong!.'];
+        }
+        return response()->json($output);
+    }
+    public function StudentEdit(Request $request)
+    {
+        if($request->ajax()){
+           $student = profile::findOrFail($request->student_id);
+           return response()->json($student);
+        }
+
         $profile = $this->file_upload($request->file('image'), 'images/profile/');
         $data = profile::create([
             'name' => $request->name,
@@ -69,14 +93,14 @@ class AjaxController extends Controller
             $code.= '<tr>
                         <td>'.$count.'</td>
                         <td>'.$student->name.'</td>
-                        <td><img src="images/profile/'.$student->image.'" class="rounded img" alt="'.$student->name.'"></td>
+                        <td><img src="images/profile/'.$student->image.'" class="rounded profile-img" alt="'.$student->name.'"></td>
                         <td>'.$student->email.'</td>
                         <td>'.$student->phone.'</td>
                         <td>'.$student->roll.'</td>
                         <td>'.$student->reg.'</td>
                         <td>'.$student->board.'</td>
                         <td>
-                         <button type="button" class="btn btn-sm btn-info edit-btn" data-id="'.$student->id.'">Edit</button>
+                         <button type="button" class="btn btn-sm btn-info edit-btn"  data-id="'.$student->id.'">Edit</button>
                           <button type="button" class="btn btn-sm btn-danger del-btn" data-id="'.$student->id.'">Delete</button>
                         </td>
                     </tr>';
@@ -84,7 +108,23 @@ class AjaxController extends Controller
         return response()->json($code);
       }
     }
-
+    public function SelectStudentData(Request $request){
+       if($request->ajax()){
+          $student = profile::findOrFail($request->student_id);
+          $dhaka = $student->board == "Dhaka" ? "selected": "";
+          $rajshahi = $student->board == "Rajshahi" ? "selected": "";
+          $barishal = $student->board == "Barisal" ? "selected": "";
+          $output  = '';
+          $output .= '
+            <label for="board" class="form-label">Board</label>
+            <select name="board" id="board" class="form-control form-control-sm">
+                <option value="">Select Board</option>
+                <option value="Dhaka" '.$dhaka.'>Dhaka</option>
+                <option value="Rajshahi"'.$rajshahi.'>Rajshahi</option>
+                <option value="Barisal"'.$barishal.'>Barisal</option>
+            </select>';
+       }
+    }
     public function StudentDelete(Request $request){
         if($request->ajax()){
             $student =  profile::findOrFail($request->student_id);

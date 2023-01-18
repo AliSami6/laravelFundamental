@@ -8,7 +8,7 @@
             </div>
             <div class="modal-body">
                 <form method="POST" id="submitForm" enctype="multipart/form-data">
-                    <div class="row">
+                    <div class="row m-2">
                         @csrf
                         <div class="col-6">
                             <div class="mb-3">
@@ -34,13 +34,17 @@
                                 <label for="reg" class="form-label">Reg</label>
                                 <input type="number" name="reg" class="form-control form-control-sm">
                             </div>
-                            <div class="mb-3">
-                                <label for="board" class="form-label">Board</label>
-                                <input type="text" name="board" class="form-control form-control-sm">
+                             <div class="mb-3" id="board">
+
                             </div>
+
                             <div class="mb-3">
                                 <label for="profile" class="form-label">Profile</label>
                                 <input type="file" name="image" class="form-control form-control-sm">
+
+                                <div class="profile-img pt-3">
+
+                                </div>
                             </div>
                         </div>
                     </div>

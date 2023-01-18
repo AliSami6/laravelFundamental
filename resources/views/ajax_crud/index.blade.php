@@ -8,7 +8,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <title>Laravel & Ajax CRUD Application!</title>
     <style>
-        .img {
+        .profile-img {
             height: 60px;
             width: 60px;
         }
@@ -79,6 +79,17 @@
         });
         // button and modal title
         function saveBtn(modal_title, save_btn_txt) {
+            $('form#submitForm')[0].reset();
+            $('form#submitForm .profile-img').html('');
+            $('#board').html(`
+                  <label for="board" class="form-label">Board</label>
+                                <select name="board"  class="form-control form-control-sm">
+                                    <option value="">Select Board</option>
+                                    <option value="Dhaka">Dhaka</option>
+                                    <option value="Rajshahi">Rajshahi</option>
+                                     <option value="Barisal">Barisal</option>
+                                </select>
+            `)
             $('h5#modal-title').text(modal_title);
             $('button.save-btn').text(save_btn_txt);
             student_modal.show();
@@ -126,7 +137,50 @@
         // student edit data
         $(document).on('click', 'button.edit-btn', function() {
             let student_id = $(this).data('id');
+            $('h5#modal-title').text('Edit Student');
+            $('button.save-btn').text('Save Changes');
+              $.ajax({
+                url: "{{ route('student.edit') }}",
+                type: "post",
+                dataType: "json",
+                data: {
+                    _token: _token,
+                    student_id: student_id
+                },
+                success: function(response) {
+                  if(response){
+                    let images_path = "{{ asset('images/profile/') }}/"+response.image
+                    $('form#submitForm input[name="name"]').val(response.name);
+                    $('form#submitForm input[name="email"]').val(response.email);
+                    $('form#submitForm input[name="phone"]').val(response.phone);
+                    $('form#submitForm input[name="roll"]').val(response.roll);
+                    $('form#submitForm input[name="reg"]').val(response.reg);
+                    $('form#submitForm select[name="board"]').val(response.board);
+                    $('form#submitForm .profile-img').html('<img class="profile-img" src="'+images_path+'" alt="profile">');
+                    student_board(response.id);
+                    student_modal.show();
+                  }
+                }
+            })
+            student_modal.show();
         });
+
+        function student_board(student_id){
+            $.ajax({
+                url: "{{ route('student.select') }}",
+                type: "post",
+                dataType: "json",
+                data: {
+                    _token: _token,
+                    student_id: student_id
+                },
+                success: function(response) {
+                    if (response) {
+                        $('#board').html(response)
+                    }
+                }
+            })
+        }
 
         // student delete data
         $(document).on('click', 'button.del-btn', function() {
