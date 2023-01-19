@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StudentRequest;
 use App\Models\profile;
 use App\Models\AjaxForm;
 use Illuminate\Http\Request;
@@ -29,7 +30,7 @@ class AjaxController extends Controller
     }
     public function FormAjaxStore(Request $request)
     {
-        $profile = $this->file_upload($request->file('image'), 'images/profile/');
+        $profile = $this->file_upload($request->file('avatar'), 'images/profile/');
         profile::create([
             'name' => $request->name,
             'email' => $request->email,
@@ -37,13 +38,13 @@ class AjaxController extends Controller
             'roll' => $request->roll,
             'reg' => $request->reg,
             'board' => $request->board,
-            'image' => $profile,
+            'avatar' => $profile,
         ]);
         return response()->json('Record Stored Successfully!.');
     }
-    public function FormAdd(Request $request)
+    public function FormAdd(StudentRequest $request)
     {
-        $profile = $this->file_upload($request->file('image'), 'images/profile/');
+        $profile = $this->file_upload($request->file('avatar'), 'images/profile/');
         $data = profile::create([
             'name' => $request->name,
             'email' => $request->email,
@@ -51,7 +52,7 @@ class AjaxController extends Controller
             'roll' => $request->roll,
             'reg' => $request->reg,
             'board' => $request->board,
-            'image' => $profile,
+            'avatar' => $profile,
         ]);
         if($data){
           $output = ['status'=>'success','message'=>'Data has been saved successfully!.'];
@@ -60,6 +61,7 @@ class AjaxController extends Controller
         }
         return response()->json($output);
     }
+
     public function StudentEdit(Request $request)
     {
         if($request->ajax()){
@@ -67,22 +69,36 @@ class AjaxController extends Controller
            return response()->json($student);
         }
 
-        $profile = $this->file_upload($request->file('image'), 'images/profile/');
-        $data = profile::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'phone' => $request->phone,
-            'roll' => $request->roll,
-            'reg' => $request->reg,
-            'board' => $request->board,
-            'image' => $profile,
-        ]);
-        if($data){
-          $output = ['status'=>'success','message'=>'Data has been saved successfully!.'];
-        }else{
-           $output = ['status'=>'error','message'=>'Something went wrong!.'];
+    }
+    public function StudentUpdate(StudentRequest $request)
+    {
+        if($request->ajax()){
+
+            $student =  profile::findOrFail($request->update);
+            if($request->hasFile('avatar')){
+                $profile = $this->file_updated($request->file('avatar'), 'images/profile/',$student->avatar);
+            }else{
+                $profile = $student->avatar;
+            }
+            $data = $student->update([
+                'name' => $request->name,
+                'email' => $request->email,
+                'phone' => $request->phone,
+                'roll' => $request->roll,
+                'reg' => $request->reg,
+                'board' => $request->board,
+                'avatar' => $profile,
+            ]);
+            if($data){
+               $output = ['status'=>'success','message'=>'Data has been updated  successfully!.'];
+            }else{
+               $output = ['status'=>'error','message'=>'Something went wrong!.'];
+            }
+            return response()->json($output);
+
         }
-        return response()->json($output);
+
+
     }
     public function StudentData(Request $request){
       if($request->ajax()){
@@ -93,7 +109,7 @@ class AjaxController extends Controller
             $code.= '<tr>
                         <td>'.$count.'</td>
                         <td>'.$student->name.'</td>
-                        <td><img src="images/profile/'.$student->image.'" class="rounded profile-img" alt="'.$student->name.'"></td>
+                        <td><img src="images/profile/'.$student->avatar.'" class="rounded profile-img" alt="'.$student->name.'"></td>
                         <td>'.$student->email.'</td>
                         <td>'.$student->phone.'</td>
                         <td>'.$student->roll.'</td>
@@ -123,6 +139,7 @@ class AjaxController extends Controller
                 <option value="Rajshahi"'.$rajshahi.'>Rajshahi</option>
                 <option value="Barisal"'.$barishal.'>Barisal</option>
             </select>';
+            return response()->json($output);
        }
     }
     public function StudentDelete(Request $request){

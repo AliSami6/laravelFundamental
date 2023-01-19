@@ -43,7 +43,7 @@ Route::post('/table',[AjaxController::class,'FormAdd'])->name('form.table');
 Route::post('/get-table-data',[AjaxController::class,'StudentData'])->name('student.getData');
 Route::post('/student-edit',[AjaxController::class,'StudentEdit'])->name('student.edit');
 Route::post('/student-select',[AjaxController::class,'SelectStudentData'])->name('student.select');
-
+Route::post('/student-update',[AjaxController::class,'StudentUpdate'])->name('student.update');
 Route::post('/student-del',[AjaxController::class,'StudentDelete'])->name('student.delete');
 Auth::routes();
 

@@ -79,23 +79,27 @@
         });
         // button and modal title
         function saveBtn(modal_title, save_btn_txt) {
-            $('form#submitForm')[0].reset();
-            $('form#submitForm .profile-img').html('');
-            $('#board').html(`
-                  <label for="board" class="form-label">Board</label>
-                                <select name="board"  class="form-control form-control-sm">
-                                    <option value="">Select Board</option>
-                                    <option value="Dhaka">Dhaka</option>
-                                    <option value="Rajshahi">Rajshahi</option>
-                                     <option value="Barisal">Barisal</option>
-                                </select>
+            $('form#ajax-form').addClass('submitForm');
+            $('form#ajax-form').removeClass('update-form');
+            $('form.submitForm input[name="update"]').val('');
+            $('form.submitForm').find('.error-msg').remove();
+            $('form.submitForm')[0].reset();
+            $('form.submitForm .profile-img').html('');
+            $('#select-board').html(`
+                <label for="board" class="form-label">Board</label>
+                <select name="board" id="board" class="form-control form-control-sm">
+                    <option value="">Select Board</option>
+                    <option value="Dhaka">Dhaka</option>
+                    <option value="Rajshahi">Rajshahi</option>
+                    <option value="Barisal">Barisal</option>
+                </select>
             `)
             $('h5#modal-title').text(modal_title);
             $('button.save-btn').text(save_btn_txt);
             student_modal.show();
         }
         // store data
-        $(document).on('submit', 'form#submitForm', function(e) {
+        $(document).on('submit','form.submitForm', function(e) {
             e.preventDefault();
             $.ajax({
                 url: "{{ route('form.table') }}",
@@ -104,22 +108,64 @@
                 contentType: false,
                 processData: false,
                 success: function(response) {
-                    if (response.status == 'success') {
-                        student_data_fetch();
-                        $('form#submitForm')[0].reset();
-                        student_modal.hide();
-                        $('.alert-msg').append('<div class="alert alert-success py-2">' + response
-                            .message + '</div>')
-
+                    $('form.submitForm').find('.error-msg').remove();
+                    if (response.status == false) {
+                        $.each(response.errors, function(key, value) {
+                            $('form.submitForm #' + key).parent().append(
+                                '<span class="text-danger error-msg">' + value + '</span>')
+                        });
                     } else {
-                        $('.alert-msg').append('<div class="alert alert-danger py-2">' + response
-                            .message + '</div>')
+                        if (response.status == 'success') {
+                            student_data_fetch();
+                            $('form.submitForm')[0].reset();
+                            student_modal.hide();
+                            $('.alert-msg').append('<div class="alert alert-success py-2">' + response
+                                .message + '</div>')
 
+                        } else {
+                            $('.alert-msg').append('<div class="alert alert-danger py-2">' + response
+                                .message + '</div>')
+
+                        }
                     }
                 }
             })
         });
-        // get student data from database
+
+        // update data
+        $(document).on('submit','form.update-form', function(e) {
+            e.preventDefault();
+            $.ajax({
+                url: "{{ route('student.update') }}",
+                type: "POST",
+                data: new FormData(this),
+                contentType: false,
+                processData: false,
+                success: function(response) {
+                    $('form.update-form').find('.error-msg').remove();
+                    if (response.status == false) {
+                        $.each(response.errors, function(key, value) {
+                            $('form.update-form #'+key).parent().append(
+                                '<span class="text-danger error-msg">' + value + '</span>')
+                        });
+                    } else {
+                        if (response.status == 'success') {
+                            student_data_fetch(); // get student data
+                            $('form.update-form')[0].reset();
+                            student_modal.hide(); // modal hide
+                            $('.alert-msg').append('<div class="alert alert-success py-2">' + response
+                                .message + '</div>')
+
+                        } else {
+                            $('.alert-msg').append('<div class="alert alert-danger py-2">' + response
+                                .message + '</div>')
+
+                        }
+                    }
+                }
+            })
+        });
+         // get student data from database
         function student_data_fetch() {
             $.ajax({
                 url: "{{ route('student.getData') }}",
@@ -134,12 +180,16 @@
             })
         }
         student_data_fetch();
-        // student edit data
+
+          // student edit data
         $(document).on('click', 'button.edit-btn', function() {
             let student_id = $(this).data('id');
             $('h5#modal-title').text('Edit Student');
             $('button.save-btn').text('Save Changes');
-              $.ajax({
+            $('form.submitForm input[name="update"]').val(student_id);
+            $('form.submitForm').addClass('update-form');
+            $('form.update-form').removeClass('submitForm');
+            $.ajax({
                 url: "{{ route('student.edit') }}",
                 type: "post",
                 dataType: "json",
@@ -148,24 +198,25 @@
                     student_id: student_id
                 },
                 success: function(response) {
-                  if(response){
-                    let images_path = "{{ asset('images/profile/') }}/"+response.image
-                    $('form#submitForm input[name="name"]').val(response.name);
-                    $('form#submitForm input[name="email"]').val(response.email);
-                    $('form#submitForm input[name="phone"]').val(response.phone);
-                    $('form#submitForm input[name="roll"]').val(response.roll);
-                    $('form#submitForm input[name="reg"]').val(response.reg);
-                    $('form#submitForm select[name="board"]').val(response.board);
-                    $('form#submitForm .profile-img').html('<img class="profile-img" src="'+images_path+'" alt="profile">');
-                    student_board(response.id);
-                    student_modal.show();
-                  }
+                    if (response) {
+                        let images_path = "{{ asset('images/profile/') }}/" + response.avatar
+                        $('form.update-form input[name="name"]').val(response.name);
+                        $('form.update-form input[name="email"]').val(response.email);
+                        $('form.update-form input[name="phone"]').val(response.phone);
+                        $('form.update-form input[name="roll"]').val(response.roll);
+                        $('form.update-form input[name="reg"]').val(response.reg);
+                        $('form.update-form .profile-img').html('<img class="profile-img" src="' +
+                            images_path + '" alt="profile">');
+                        student_board(response.id);
+                        student_modal.show();
+                    }
                 }
             })
-            student_modal.show();
         });
 
-        function student_board(student_id){
+
+        function student_board(student_id) {
+            //alert(student_id);
             $.ajax({
                 url: "{{ route('student.select') }}",
                 type: "post",
@@ -176,7 +227,7 @@
                 },
                 success: function(response) {
                     if (response) {
-                        $('#board').html(response)
+                        $('#select-board').html(response);
                     }
                 }
             })
@@ -196,9 +247,11 @@
                 success: function(response) {
                     if (response.status == 'success') {
                         student_data_fetch();
-                        $('.alert-msg').append('<div class="alert alert-success py-2">' + response.message + '</div>')
-                    }else{
-                         $('.alert-msg').append('<div class="alert alert-danger py-2">' + response.message + '</div>')
+                        $('.alert-msg').append('<div class="alert alert-success py-2">' + response
+                            .message + '</div>')
+                    } else {
+                        $('.alert-msg').append('<div class="alert alert-danger py-2">' + response
+                            .message + '</div>')
                     }
                 }
             })

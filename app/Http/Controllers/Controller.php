@@ -23,12 +23,12 @@ class Controller extends BaseController
     {
         //prevoius file remove from resource
         if ($old_file != null) {
-            file_exists($folder . $old_file->image) ? unlink($folder . $old_file->image) : false;
+            file_exists($folder . $old_file) ? unlink($folder . $old_file) : false;
         }
-        $product_file = $file;
-        $file_extention = $product_file->getClientOriginalExtension();
+
+        $file_extention = $file->getClientOriginalExtension();
         $product_image_name = time() . rand() . '.' . $file_extention;
-        $product_file->move($folder, $product_image_name);
+        $file->move($folder, $product_image_name);
         return $product_image_name;
     }
      protected function file_remove($folder, $old_file)

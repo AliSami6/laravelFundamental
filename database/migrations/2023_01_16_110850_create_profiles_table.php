@@ -21,7 +21,7 @@ class CreateProfilesTable extends Migration
             $table->integer('roll');
             $table->integer('reg');
             $table->string('board');
-            $table->string('image');
+            $table->string('avatar');
             $table->timestamps();
         });
     }
